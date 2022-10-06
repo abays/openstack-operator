@@ -125,8 +125,10 @@ func main() {
 		os.Exit(1)
 	}
 	if err = (&rabbitmqcontrollers.TransportURLReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
+		Client:  mgr.GetClient(),
+		Scheme:  mgr.GetScheme(),
+		Kclient: kclient,
+		Log:     ctrl.Log.WithName("controllers").WithName("TrasnportURL"),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "TransportURL")
 		os.Exit(1)

@@ -11934,9 +11934,6 @@ spec:
           status:
             description: OpenStackControlPlaneStatus defines the observed state of
               OpenStackControlPlane
-            properties:
-              secretName:
-                type: string
             type: object
         type: object
     served: true

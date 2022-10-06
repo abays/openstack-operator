@@ -63,7 +63,8 @@ type OpenStackControlPlaneSpec struct {
 
 // OpenStackControlPlaneStatus defines the observed state of OpenStackControlPlane
 type OpenStackControlPlaneStatus struct {
-	SecretName string `json:"secretName,omitempty"`
+       // INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+       // Important: Run "make" to regenerate code after modifying this file
 }
 
 //+kubebuilder:object:root=true
