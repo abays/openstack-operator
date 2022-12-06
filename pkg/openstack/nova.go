@@ -96,3 +96,26 @@ func ReconcileNova(ctx context.Context, instance *corev1beta1.OpenStackControlPl
 
 	return ctrl.Result{}, nil
 }
+
+// DeleteNova -
+func DeleteNova(ctx context.Context, instance *corev1beta1.OpenStackControlPlane, helper *helper.Helper) (ctrl.Result, error) {
+	overallRes := ctrl.Result{}
+
+	novaList := &novav1.NovaList{}
+
+	if err := helper.GetClient().List(context.Background(), novaList); err != nil {
+		return overallRes, err
+	}
+
+	for _, nova := range novaList.Items {
+		res, err := checkDeleteSubresource(ctx, instance, helper, &nova)
+
+		if err != nil {
+			return res, err
+		} else if (res != ctrl.Result{}) {
+			overallRes = res
+		}
+	}
+
+	return overallRes, nil
+}

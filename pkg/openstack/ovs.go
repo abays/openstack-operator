@@ -68,3 +68,26 @@ func ReconcileOVS(ctx context.Context, instance *corev1beta1.OpenStackControlPla
 	}
 	return ctrl.Result{}, nil
 }
+
+// DeleteOVS -
+func DeleteOVS(ctx context.Context, instance *corev1beta1.OpenStackControlPlane, helper *helper.Helper) (ctrl.Result, error) {
+	overallRes := ctrl.Result{}
+
+	ovsList := &ovsv1.OVSList{}
+
+	if err := helper.GetClient().List(context.Background(), ovsList); err != nil {
+		return overallRes, err
+	}
+
+	for _, ovs := range ovsList.Items {
+		res, err := checkDeleteSubresource(ctx, instance, helper, &ovs)
+
+		if err != nil {
+			return res, err
+		} else if (res != ctrl.Result{}) {
+			overallRes = res
+		}
+	}
+
+	return overallRes, nil
+}

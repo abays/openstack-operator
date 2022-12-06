@@ -75,3 +75,26 @@ func ReconcileCinder(ctx context.Context, instance *corev1beta1.OpenStackControl
 	return ctrl.Result{}, nil
 
 }
+
+// DeleteCinder -
+func DeleteCinder(ctx context.Context, instance *corev1beta1.OpenStackControlPlane, helper *helper.Helper) (ctrl.Result, error) {
+	overallRes := ctrl.Result{}
+
+	cinderList := &cinderv1.CinderList{}
+
+	if err := helper.GetClient().List(context.Background(), cinderList); err != nil {
+		return overallRes, err
+	}
+
+	for _, cinder := range cinderList.Items {
+		res, err := checkDeleteSubresource(ctx, instance, helper, &cinder)
+
+		if err != nil {
+			return res, err
+		} else if (res != ctrl.Result{}) {
+			overallRes = res
+		}
+	}
+
+	return overallRes, nil
+}

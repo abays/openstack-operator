@@ -109,3 +109,42 @@ func ReconcileOVN(ctx context.Context, instance *corev1beta1.OpenStackControlPla
 	}
 	return ctrl.Result{}, nil
 }
+
+// DeleteOVN -
+func DeleteOVN(ctx context.Context, instance *corev1beta1.OpenStackControlPlane, helper *helper.Helper) (ctrl.Result, error) {
+	overallRes := ctrl.Result{}
+
+	ovnDBClusterList := &ovnv1.OVNDBClusterList{}
+
+	if err := helper.GetClient().List(context.Background(), ovnDBClusterList); err != nil {
+		return overallRes, err
+	}
+
+	for _, ovnDBCluster := range ovnDBClusterList.Items {
+		res, err := checkDeleteSubresource(ctx, instance, helper, &ovnDBCluster)
+
+		if err != nil {
+			return res, err
+		} else if (res != ctrl.Result{}) {
+			overallRes = res
+		}
+	}
+
+	ovnNorthdList := &ovnv1.OVNNorthdList{}
+
+	if err := helper.GetClient().List(context.Background(), ovnNorthdList); err != nil {
+		return overallRes, err
+	}
+
+	for _, ovnNorthd := range ovnNorthdList.Items {
+		res, err := checkDeleteSubresource(ctx, instance, helper, &ovnNorthd)
+
+		if err != nil {
+			return res, err
+		} else if (res != ctrl.Result{}) {
+			overallRes = res
+		}
+	}
+
+	return overallRes, nil
+}

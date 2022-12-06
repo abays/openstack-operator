@@ -73,3 +73,26 @@ func ReconcilePlacementAPI(ctx context.Context, instance *corev1beta1.OpenStackC
 	return ctrl.Result{}, nil
 
 }
+
+// DeletePlacement -
+func DeletePlacement(ctx context.Context, instance *corev1beta1.OpenStackControlPlane, helper *helper.Helper) (ctrl.Result, error) {
+	overallRes := ctrl.Result{}
+
+	placementAPIList := &placementv1.PlacementAPIList{}
+
+	if err := helper.GetClient().List(context.Background(), placementAPIList); err != nil {
+		return overallRes, err
+	}
+
+	for _, placementAPI := range placementAPIList.Items {
+		res, err := checkDeleteSubresource(ctx, instance, helper, &placementAPI)
+
+		if err != nil {
+			return res, err
+		} else if (res != ctrl.Result{}) {
+			overallRes = res
+		}
+	}
+
+	return overallRes, nil
+}

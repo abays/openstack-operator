@@ -73,3 +73,26 @@ func ReconcileGlance(ctx context.Context, instance *corev1beta1.OpenStackControl
 	return ctrl.Result{}, nil
 
 }
+
+// DeleteGlance -
+func DeleteGlance(ctx context.Context, instance *corev1beta1.OpenStackControlPlane, helper *helper.Helper) (ctrl.Result, error) {
+	overallRes := ctrl.Result{}
+
+	glanceList := &glancev1.GlanceList{}
+
+	if err := helper.GetClient().List(context.Background(), glanceList); err != nil {
+		return overallRes, err
+	}
+
+	for _, glance := range glanceList.Items {
+		res, err := checkDeleteSubresource(ctx, instance, helper, &glance)
+
+		if err != nil {
+			return res, err
+		} else if (res != ctrl.Result{}) {
+			overallRes = res
+		}
+	}
+
+	return overallRes, nil
+}

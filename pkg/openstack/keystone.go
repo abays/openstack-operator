@@ -74,3 +74,26 @@ func ReconcileKeystoneAPI(ctx context.Context, instance *corev1beta1.OpenStackCo
 	return ctrl.Result{}, nil
 
 }
+
+// DeleteKeystone -
+func DeleteKeystone(ctx context.Context, instance *corev1beta1.OpenStackControlPlane, helper *helper.Helper) (ctrl.Result, error) {
+	overallRes := ctrl.Result{}
+
+	keystoneAPIList := &keystonev1.KeystoneAPIList{}
+
+	if err := helper.GetClient().List(context.Background(), keystoneAPIList); err != nil {
+		return overallRes, err
+	}
+
+	for _, keystoneAPI := range keystoneAPIList.Items {
+		res, err := checkDeleteSubresource(ctx, instance, helper, &keystoneAPI)
+
+		if err != nil {
+			return res, err
+		} else if (res != ctrl.Result{}) {
+			overallRes = res
+		}
+	}
+
+	return overallRes, nil
+}

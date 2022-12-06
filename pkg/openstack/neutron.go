@@ -73,3 +73,26 @@ func ReconcileNeutron(ctx context.Context, instance *corev1beta1.OpenStackContro
 	return ctrl.Result{}, nil
 
 }
+
+// DeleteNeutron -
+func DeleteNeutron(ctx context.Context, instance *corev1beta1.OpenStackControlPlane, helper *helper.Helper) (ctrl.Result, error) {
+	overallRes := ctrl.Result{}
+
+	neutronAPIList := &neutronv1.NeutronAPIList{}
+
+	if err := helper.GetClient().List(context.Background(), neutronAPIList); err != nil {
+		return overallRes, err
+	}
+
+	for _, neutronAPI := range neutronAPIList.Items {
+		res, err := checkDeleteSubresource(ctx, instance, helper, &neutronAPI)
+
+		if err != nil {
+			return res, err
+		} else if (res != ctrl.Result{}) {
+			overallRes = res
+		}
+	}
+
+	return overallRes, nil
+}

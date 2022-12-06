@@ -10,7 +10,7 @@ require (
 	github.com/openstack-k8s-operators/mariadb-operator/api v0.0.0-20221122141723-fb7400f56094
 	github.com/openstack-k8s-operators/neutron-operator/api v0.0.0-20221130112258-2d20ea7691aa
 	github.com/openstack-k8s-operators/nova-operator/api v0.0.0-20221202102038-d992628c4b3b
-	github.com/openstack-k8s-operators/ovn-operator/api v0.0.0-20221130085454-49cd8b9c841c
+	github.com/openstack-k8s-operators/ovn-operator/api v0.0.0-20221207080022-c1b02939677e
 	github.com/openstack-k8s-operators/placement-operator/api v0.0.0-20221202142822-366b98894af3
 	github.com/rabbitmq/cluster-operator v1.14.0
 	k8s.io/apimachinery v0.25.4
@@ -48,7 +48,7 @@ require (
 	github.com/openshift/api v3.9.0+incompatible // indirect
 	github.com/openstack-k8s-operators/lib-common/modules/openstack v0.0.0-20220915080953-f73a201a1da6 // indirect
 	github.com/openstack-k8s-operators/lib-common/modules/storage v0.0.0-20220923094431-9fca0c85a9dc // indirect
-	github.com/openstack-k8s-operators/ovs-operator/api v0.0.0-20221205051819-43257febb7f9
+	github.com/openstack-k8s-operators/ovs-operator/api v0.0.0-20221205134225-c415d98c0182
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.13.0 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect

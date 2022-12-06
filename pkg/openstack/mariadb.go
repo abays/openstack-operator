@@ -71,3 +71,26 @@ func ReconcileMariaDB(ctx context.Context, instance *corev1beta1.OpenStackContro
 	return ctrl.Result{}, nil
 
 }
+
+// DeleteMariaDB -
+func DeleteMariaDB(ctx context.Context, instance *corev1beta1.OpenStackControlPlane, helper *helper.Helper) (ctrl.Result, error) {
+	overallRes := ctrl.Result{}
+
+	mariaDBList := &mariadbv1.MariaDBList{}
+
+	if err := helper.GetClient().List(context.Background(), mariaDBList); err != nil {
+		return overallRes, err
+	}
+
+	for _, mariaDB := range mariaDBList.Items {
+		res, err := checkDeleteSubresource(ctx, instance, helper, &mariaDB)
+
+		if err != nil {
+			return res, err
+		} else if (res != ctrl.Result{}) {
+			overallRes = res
+		}
+	}
+
+	return overallRes, nil
+}

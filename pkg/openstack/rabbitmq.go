@@ -140,3 +140,26 @@ func ReconcileRabbitMQ(ctx context.Context, instance *corev1beta1.OpenStackContr
 
 	return ctrl.Result{}, nil
 }
+
+// DeleteRabbitMq -
+func DeleteRabbitMq(ctx context.Context, instance *corev1beta1.OpenStackControlPlane, helper *helper.Helper) (ctrl.Result, error) {
+	overallRes := ctrl.Result{}
+
+	rabbitMqClusterList := &rabbitmqv1.RabbitmqClusterList{}
+
+	if err := helper.GetClient().List(context.Background(), rabbitMqClusterList); err != nil {
+		return overallRes, err
+	}
+
+	for _, rabbitMqCluster := range rabbitMqClusterList.Items {
+		res, err := checkDeleteSubresource(ctx, instance, helper, &rabbitMqCluster)
+
+		if err != nil {
+			return res, err
+		} else if (res != ctrl.Result{}) {
+			overallRes = res
+		}
+	}
+
+	return overallRes, nil
+}

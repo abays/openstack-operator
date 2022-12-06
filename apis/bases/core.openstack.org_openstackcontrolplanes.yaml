@@ -2050,8 +2050,10 @@ spec:
                             of OVNDBCluster
                           properties:
                             containerImage:
+                              default: quay.io/tripleozedcentos9/openstack-ovn-nb-db-server:current-tripleo
                               type: string
                             dbType:
+                              default: NB
                               description: DBType - NB or SB
                               pattern: ^NB|SB$
                               type: string
@@ -2119,6 +2121,7 @@ spec:
                           OVNNorthd service
                         properties:
                           containerImage:
+                            default: quay.io/tripleozedcentos9/openstack-ovn-northd:current-tripleo
                             type: string
                           logLevel:
                             default: info

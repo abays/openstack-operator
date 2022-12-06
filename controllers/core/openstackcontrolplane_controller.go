@@ -18,6 +18,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 
 	cinderv1 "github.com/openstack-k8s-operators/cinder-operator/api/v1beta1"
 	glancev1 "github.com/openstack-k8s-operators/glance-operator/api/v1beta1"
@@ -39,6 +40,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	"github.com/go-logr/logr"
@@ -110,6 +112,25 @@ func (r *OpenStackControlPlaneReconciler) Reconcile(ctx context.Context, req ctr
 		return ctrl.Result{}, err
 	}
 
+	helper, err := helper.NewHelper(
+		instance,
+		r.Client,
+		r.Kclient,
+		r.Scheme,
+		r.Log,
+	)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	// If we're not deleting this and the service object doesn't have our finalizer, add it.
+	if instance.DeletionTimestamp.IsZero() && controllerutil.AddFinalizer(instance, helper.GetFinalizer()) {
+		// Register the finalizer immediately to avoid orphaning resources on delete
+		err := r.Update(ctx, instance)
+
+		return ctrl.Result{}, err
+	}
+
 	//
 	// initialize status
 	//
@@ -135,17 +156,6 @@ func (r *OpenStackControlPlaneReconciler) Reconcile(ctx context.Context, req ctr
 		return ctrl.Result{}, r.Status().Update(ctx, instance)
 	}
 
-	helper, err := helper.NewHelper(
-		instance,
-		r.Client,
-		r.Kclient,
-		r.Scheme,
-		r.Log,
-	)
-	if err != nil {
-		return ctrl.Result{}, err
-	}
-
 	// Always patch the instance status when exiting this function so we can persist any changes.
 	defer func() {
 		// update the overall status condition if service is ready
@@ -166,8 +176,11 @@ func (r *OpenStackControlPlaneReconciler) Reconcile(ctx context.Context, req ctr
 		}
 	}()
 
-	return r.reconcileNormal(ctx, instance, helper)
+	if !instance.DeletionTimestamp.IsZero() {
+		return r.reconcileDelete(ctx, instance, helper)
+	}
 
+	return r.reconcileNormal(ctx, instance, helper)
 }
 
 func (r *OpenStackControlPlaneReconciler) reconcileNormal(ctx context.Context, instance *corev1beta1.OpenStackControlPlane, helper *helper.Helper) (ctrl.Result, error) {
@@ -243,6 +256,107 @@ func (r *OpenStackControlPlaneReconciler) reconcileNormal(ctx context.Context, i
 	}
 
 	return ctrl.Result{}, nil
+}
+
+func (r *OpenStackControlPlaneReconciler) reconcileDelete(ctx context.Context, instance *corev1beta1.OpenStackControlPlane, helper *helper.Helper) (ctrl.Result, error) {
+	var err error
+	overallRes := ctrl.Result{}
+
+	// Delete non-Keystone, non-Rabbit services first
+	res, err := openstack.DeleteCinder(ctx, instance, helper)
+	if err != nil {
+		return res, err
+	} else if (res != ctrl.Result{}) {
+		overallRes = res
+	}
+
+	res, err = openstack.DeleteGlance(ctx, instance, helper)
+	if err != nil {
+		return res, err
+	} else if (res != ctrl.Result{}) {
+		overallRes = res
+	}
+
+	res, err = openstack.DeleteNeutron(ctx, instance, helper)
+	if err != nil {
+		return res, err
+	} else if (res != ctrl.Result{}) {
+		overallRes = res
+	}
+
+	res, err = openstack.DeleteNova(ctx, instance, helper)
+	if err != nil {
+		return res, err
+	} else if (res != ctrl.Result{}) {
+		overallRes = res
+	}
+
+	res, err = openstack.DeleteOVN(ctx, instance, helper)
+	if err != nil {
+		return res, err
+	} else if (res != ctrl.Result{}) {
+		overallRes = res
+	}
+
+	res, err = openstack.DeleteOVS(ctx, instance, helper)
+	if err != nil {
+		return res, err
+	} else if (res != ctrl.Result{}) {
+		overallRes = res
+	}
+
+	res, err = openstack.DeletePlacement(ctx, instance, helper)
+	if err != nil {
+		return res, err
+	} else if (res != ctrl.Result{}) {
+		overallRes = res
+	}
+
+	// If we're still waiting for the resources above to be deleted, stop here
+	if (overallRes != ctrl.Result{}) {
+		return overallRes, nil
+	}
+
+	// Delete Rabbit and Keystone
+	res, err = openstack.DeleteRabbitMq(ctx, instance, helper)
+	if err != nil {
+		return res, err
+	} else if (res != ctrl.Result{}) {
+		overallRes = res
+	}
+
+	res, err = openstack.DeleteKeystone(ctx, instance, helper)
+	if err != nil {
+		return res, err
+	} else if (res != ctrl.Result{}) {
+		overallRes = res
+	}
+
+	// If we're still waiting for the resources above to be deleted, stop here
+	if (overallRes != ctrl.Result{}) {
+		r.Log.Info(fmt.Sprintf("OpenStackControlPlane %s deletion is waiting on sub-resource deletion, requeuing...", instance.Name))
+		return overallRes, nil
+	}
+
+	// Finally, delete MariaDB
+	res, err = openstack.DeleteMariaDB(ctx, instance, helper)
+	if err != nil {
+		return res, err
+	} else if (res != ctrl.Result{}) {
+		overallRes = res
+	}
+
+	if (overallRes == ctrl.Result{}) {
+		// Everything is cleared, so remove the finalizer so this OpenStackControlPlane can be fully removed
+		controllerutil.RemoveFinalizer(instance, helper.GetFinalizer())
+		if err := r.Update(ctx, instance); err != nil && !k8s_errors.IsNotFound(err) {
+			return overallRes, err
+		}
+
+		r.Log.Info("Reconciled Service delete successfully")
+	}
+
+	return overallRes, err
 }
 
 // SetupWithManager sets up the controller with the Manager.
