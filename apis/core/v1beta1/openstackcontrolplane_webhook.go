@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	"github.com/openstack-k8s-operators/lib-common/modules/common/route"
+	"github.com/openstack-k8s-operators/swift-operator/api/v1beta1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -286,8 +287,11 @@ func (r *OpenStackControlPlane) ValidateUpdateServices(old OpenStackControlPlane
 		errors = append(errors, r.Spec.Manila.Template.ValidateUpdate(old.Manila.Template, basePath.Child("manila").Child("template"))...)
 	}
 
-	if r.Spec.Swift.Enabled {
-		errors = append(errors, r.Spec.Swift.Template.ValidateUpdate(old.Swift.Template, basePath.Child("swift").Child("template"))...)
+	if r.Spec.Swift.Enabled && old.Swift.Template != nil {
+		if r.Spec.Swift.Template == nil {
+			r.Spec.Swift.Template = &v1beta1.SwiftSpecCore{}
+		}
+		errors = append(errors, r.Spec.Swift.Template.ValidateUpdate(*old.Swift.Template, basePath.Child("swift").Child("template"))...)
 	}
 
 	if r.Spec.Octavia.Enabled {
@@ -487,11 +491,17 @@ func (r *OpenStackControlPlane) DefaultServices() {
 	r.Spec.Heat.Template.Default()
 
 	// Swift
-	if r.Spec.Swift.Template.SwiftStorage.StorageClass == "" {
-		r.Spec.Swift.Template.SwiftStorage.StorageClass = r.Spec.StorageClass
-	}
+	if r.Spec.Swift.Enabled {
+		if r.Spec.Swift.Template == nil {
+			r.Spec.Swift.Template = &v1beta1.SwiftSpecCore{}
+		}
 
-	r.Spec.Swift.Template.Default()
+		if r.Spec.Swift.Template.SwiftStorage.StorageClass == "" {
+			r.Spec.Swift.Template.SwiftStorage.StorageClass = r.Spec.StorageClass
+		}
+
+		r.Spec.Swift.Template.Default()
+	}
 
 	// Horizon
 	r.Spec.Horizon.Template.Default()

@@ -678,7 +678,7 @@ type SwiftSection struct {
 	// +kubebuilder:validation:Optional
 	//+operator-sdk:csv:customresourcedefinitions:type=spec
 	// Template - Overrides to use when creating Swift Resources
-	Template swiftv1.SwiftSpecCore `json:"template,omitempty"`
+	Template *swiftv1.SwiftSpecCore `json:"template,omitempty"`
 
 	// +kubebuilder:validation:Optional
 	// +operator-sdk:csv:customresourcedefinitions:type=spec
