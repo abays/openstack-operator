@@ -17458,6 +17458,8 @@ spec:
                     type: string
                   edpmNodeExporterImage:
                     type: string
+                  edpmOpenstackNetworkExporterImage:
+                    type: string
                   edpmOvnBgpAgentImage:
                     type: string
                   glanceAPIImage:
