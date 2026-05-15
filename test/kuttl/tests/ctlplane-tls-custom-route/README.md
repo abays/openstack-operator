@@ -14,7 +14,7 @@ The test uses a hybrid approach combining cert-manager, bash scripts, ConfigMaps
 ### Running the Test
 
 ```bash
-export NAMESPACE="openstack-kuttl-tests"
+export NAMESPACE="my-kuttl-namespace"
 kubectl kuttl test --test ctlplane-tls-custom-route
 ```
 
@@ -161,17 +161,17 @@ The `../../common/create_custom_cert.sh` script provides:
 source ../../common/create_custom_cert.sh
 
 # For keystone
-create_service_route_certificate "keystone" "apps-crc.testing" "openstack-kuttl-tests"
+create_service_route_certificate "keystone" "apps-crc.testing" "$NAMESPACE"
 
 # For glance
-create_service_route_certificate "glance" "apps-crc.testing" "openstack-kuttl-tests"
+create_service_route_certificate "glance" "apps-crc.testing" "$NAMESPACE"
 ```
 
 #### Setup Complete Infrastructure
 
 ```bash
 # Creates both ingress and internal issuers
-setup_custom_certificate_infrastructure "openstack-kuttl-tests"
+setup_custom_certificate_infrastructure "$NAMESPACE"
 ```
 
 ## Kustomize Implementation Details

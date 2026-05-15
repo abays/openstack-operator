@@ -10,7 +10,6 @@ apiVersion: dataplane.openstack.org/v1beta1
 kind: OpenStackDataPlaneNodeSet
 metadata:
   name: edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
 spec:
   services:
   - download-cache
@@ -76,7 +75,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: download-cache
   name: download-cache-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -175,7 +173,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: bootstrap
   name: bootstrap-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -281,7 +278,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: configure-network
   name: configure-network-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -381,7 +377,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: validate-network
   name: validate-network-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -481,7 +476,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: configure-os
   name: configure-os-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -581,7 +575,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: install-certs
   name: install-certs-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -723,7 +716,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: ovn
   name: ovn-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -833,7 +825,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: neutron-metadata
   name: neutron-metadata-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -973,7 +964,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: neutron-ovn
   name: neutron-ovn-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -1113,7 +1103,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: neutron-sriov
   name: neutron-sriov-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -1223,7 +1212,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: neutron-dhcp
   name: neutron-dhcp-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -1333,7 +1321,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: libvirt
   name: libvirt-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -1443,7 +1430,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: nova
   name: nova-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true

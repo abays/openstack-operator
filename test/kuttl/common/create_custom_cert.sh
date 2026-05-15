@@ -8,7 +8,7 @@ function wait_for_state() {
     local object="$1"
     local state="$2"
     local timeout="$3"
-    local namespace="${4:-openstack-kuttl-tests}"
+    local namespace="${4:-$NAMESPACE}"
 
     echo "Waiting for '${object}' in namespace '${namespace}' to become '${state}'..."
     oc wait --for=${state} --timeout=${timeout} ${object} -n="${namespace}"
@@ -17,7 +17,7 @@ function wait_for_state() {
 
 # Create a self-signed issuer (prerequisite for CA certificate)
 function create_selfsigned_issuer() {
-    local namespace="${1:-openstack-kuttl-tests}"
+    local namespace="${1:-$NAMESPACE}"
 
     echo "Creating self-signed issuer in namespace ${namespace}..."
     oc apply -f - << EOF
@@ -43,7 +43,7 @@ EOF
 # Usage: create_custom_issuer <issuer-name> <namespace>
 function create_custom_issuer() {
     local issuer_name="${1:-rootca-custom}"
-    local namespace="${2:-openstack-kuttl-tests}"
+    local namespace="${2:-$NAMESPACE}"
 
     echo "Creating custom root CA and issuer: ${issuer_name} in namespace ${namespace}..."
 
@@ -107,7 +107,7 @@ function create_wildcard_certificate() {
     local cert_name="${1}"
     local domain="${2}"
     local issuer_name="${3:-rootca-custom}"
-    local namespace="${4:-openstack-kuttl-tests}"
+    local namespace="${4:-$NAMESPACE}"
 
     if [[ -z "${cert_name}" ]] || [[ -z "${domain}" ]]; then
         echo "Error: cert_name and domain are required"
@@ -157,7 +157,7 @@ EOF
 function create_service_route_certificate() {
     local service_name="${1}"
     local ingress_domain="${2}"
-    local namespace="${3:-openstack-kuttl-tests}"
+    local namespace="${3:-$NAMESPACE}"
     local issuer_name="rootca-ingress-custom"
     local cert_name="${service_name}-custom-route-cert"
     local route_secret_name="${service_name}-custom-route"
@@ -218,7 +218,7 @@ EOF
 # This creates ingress and internal issuers for comprehensive testing
 # Usage: setup_custom_certificate_infrastructure <namespace>
 function setup_custom_certificate_infrastructure() {
-    local namespace="${1:-openstack-kuttl-tests}"
+    local namespace="${1:-$NAMESPACE}"
 
     echo "Setting up custom certificate infrastructure in namespace ${namespace}..."
 
@@ -238,7 +238,7 @@ function setup_custom_certificate_infrastructure() {
 # Usage: create_barbican_placement_routes <ingress-domain> <namespace>
 function create_barbican_placement_routes() {
     local ingress_domain="${1}"
-    local namespace="${2:-openstack-kuttl-tests}"
+    local namespace="${2:-$NAMESPACE}"
 
     if [[ -z "${ingress_domain}" ]]; then
         echo "Error: ingress_domain is required"
@@ -265,7 +265,7 @@ function create_barbican_placement_routes() {
 # Cleanup custom certificates and issuers
 # Usage: cleanup_custom_certificates <namespace>
 function cleanup_custom_certificates() {
-    local namespace="${1:-openstack-kuttl-tests}"
+    local namespace="${1:-$NAMESPACE}"
 
     echo "Cleaning up custom certificates and issuers in namespace ${namespace}..."
 

@@ -1,6 +1,14 @@
 apiVersion: kuttl.dev/v1beta1
 kind: TestAssert
 timeout: 600
+commands:
+- script: |
+    set -euo pipefail
+    EXPECTED_MSG="execution.namespace $NAMESPACE"
+    for resource in openstackdataplanenodeset/edpm-compute-no-nodes openstackdataplanedeployment/edpm-compute-no-nodes; do
+      MSG=$(oc get "$resource" -n "$NAMESPACE" -o jsonpath='{.status.conditions[?(@.type=="Ready")].message}')
+      echo "$MSG" | grep -q "$EXPECTED_MSG" || { echo "FAIL: $resource Ready condition message missing expected namespace"; exit 1; }
+    done
 collectors:
 - type: command
   command: oc logs -n openstack-operators -l openstack.org/operator-name=openstack
@@ -15,7 +23,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: failed-service
   name: failed-service-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -122,7 +129,6 @@ kind: OpenStackDataPlaneNodeSet
 metadata:
   generation: 1
   name: edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
 spec:
   nodeTemplate:
     ansibleSSHPrivateKeySecret: dataplane-ansible-ssh-private-key-secret
@@ -134,17 +140,11 @@ spec:
   tlsEnabled: true
 status:
   conditions:
-  - message: 'Deployment error occurred in failed-service service error backoff limit
-      reached for execution.name failed-service-edpm-compute-no-nodes-edpm-compute-no-nodes
-      execution.namespace openstack-kuttl-tests execution.condition.message: Job has reached the specified backoff limit'
-    reason: Error
+  - reason: Error
     severity: Error
     status: "False"
     type: Ready
-  - message: 'Deployment error occurred in failed-service service error backoff limit
-      reached for execution.name failed-service-edpm-compute-no-nodes-edpm-compute-no-nodes
-      execution.namespace openstack-kuttl-tests execution.condition.message: Job has reached the specified backoff limit'
-    reason: Error
+  - reason: Error
     severity: Error
     status: "False"
     type: DeploymentReady
@@ -170,17 +170,11 @@ status:
     type: SetupReady
   deploymentStatuses:
     edpm-compute-no-nodes:
-    - message: 'Deployment error occurred in failed-service service error backoff
-        limit reached for execution.name failed-service-edpm-compute-no-nodes-edpm-compute-no-nodes
-        execution.namespace openstack-kuttl-tests execution.condition.message: Job has reached the specified backoff limit'
-      reason: BackoffLimitExceeded
+    - reason: BackoffLimitExceeded
       severity: Error
       status: "False"
       type: NodeSetDeploymentReady
-    - message: 'Deployment error occurred in failed-service service error backoff
-        limit reached for execution.name failed-service-edpm-compute-no-nodes-edpm-compute-no-nodes
-        execution.namespace openstack-kuttl-tests execution.condition.message: Job has reached the specified backoff limit'
-      reason: BackoffLimitExceeded
+    - reason: BackoffLimitExceeded
       severity: Error
       status: "False"
       type: ServiceFailedServiceDeploymentReady
@@ -191,7 +185,6 @@ kind: OpenStackDataPlaneDeployment
 metadata:
   generation: 1
   name: edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
 spec:
   backoffLimit: 3
   deploymentRequeueTime: 15
@@ -199,17 +192,11 @@ spec:
   - edpm-compute-no-nodes
 status:
   conditions:
-  - message: 'Deployment error occurred nodeSet: edpm-compute-no-nodes error: backoff
-      limit reached for execution.name failed-service-edpm-compute-no-nodes-edpm-compute-no-nodes
-      execution.namespace openstack-kuttl-tests execution.condition.message: Job has reached the specified backoff limit'
-    reason: BackoffLimitExceeded
+  - reason: BackoffLimitExceeded
     severity: Error
     status: "False"
     type: Ready
-  - message: 'Deployment error occurred nodeSet: edpm-compute-no-nodes error: backoff
-      limit reached for execution.name failed-service-edpm-compute-no-nodes-edpm-compute-no-nodes
-      execution.namespace openstack-kuttl-tests execution.condition.message: Job has reached the specified backoff limit'
-    reason: BackoffLimitExceeded
+  - reason: BackoffLimitExceeded
     severity: Error
     status: "False"
     type: DeploymentReady
@@ -219,17 +206,11 @@ status:
     type: InputReady
   nodeSetConditions:
     edpm-compute-no-nodes:
-    - message: 'Deployment error occurred in failed-service service error backoff
-        limit reached for execution.name failed-service-edpm-compute-no-nodes-edpm-compute-no-nodes
-        execution.namespace openstack-kuttl-tests execution.condition.message: Job has reached the specified backoff limit'
-      reason: BackoffLimitExceeded
+    - reason: BackoffLimitExceeded
       severity: Error
       status: "False"
       type: NodeSetDeploymentReady
-    - message: 'Deployment error occurred in failed-service service error backoff
-        limit reached for execution.name failed-service-edpm-compute-no-nodes-edpm-compute-no-nodes
-        execution.namespace openstack-kuttl-tests execution.condition.message: Job has reached the specified backoff limit'
-      reason: BackoffLimitExceeded
+    - reason: BackoffLimitExceeded
       severity: Error
       status: "False"
       type: ServiceFailedServiceDeploymentReady

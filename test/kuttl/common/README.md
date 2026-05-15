@@ -79,24 +79,24 @@ commands:
 source ../../common/create_custom_cert.sh
 
 # For keystone
-create_service_route_certificate "keystone" "apps-crc.testing" "openstack-kuttl-tests"
+create_service_route_certificate "keystone" "apps-crc.testing" "$NAMESPACE"
 
 # For glance
-create_service_route_certificate "glance" "apps-crc.testing" "openstack-kuttl-tests"
+create_service_route_certificate "glance" "apps-crc.testing" "$NAMESPACE"
 ```
 
 ### Setup Complete Infrastructure
 
 ```bash
 # Creates both ingress and internal issuers
-setup_custom_certificate_infrastructure "openstack-kuttl-tests"
+setup_custom_certificate_infrastructure "$NAMESPACE"
 ```
 
 ### Cleanup
 
 ```bash
 # Remove all custom certificates and issuers
-cleanup_custom_certificates "openstack-kuttl-tests"
+cleanup_custom_certificates "$NAMESPACE"
 ```
 
 ## Security Considerations

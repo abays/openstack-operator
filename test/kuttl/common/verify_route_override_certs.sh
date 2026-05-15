@@ -6,7 +6,7 @@
 set -e
 
 SERVICE_NAME=$1
-NAMESPACE=${NAMESPACE:-openstack-kuttl-tests}
+NAMESPACE=${NAMESPACE:?NAMESPACE must be set}
 
 if [[ -z "${SERVICE_NAME}" ]]; then
     echo "ERROR: Service name is required"

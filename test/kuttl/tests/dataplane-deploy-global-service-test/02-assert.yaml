@@ -10,7 +10,6 @@ apiVersion: dataplane.openstack.org/v1beta1
 kind: OpenStackDataPlaneNodeSet
 metadata:
   name: edpm-compute-beta-nodeset
-  namespace: openstack-kuttl-tests
 spec:
   services:
   - download-cache
@@ -67,7 +66,6 @@ apiVersion: dataplane.openstack.org/v1beta1
 kind: OpenStackDataPlaneDeployment
 metadata:
   name: edpm-multinodeset
-  namespace: openstack-kuttl-tests
 spec:
   nodeSets:
     - edpm-compute-global
@@ -81,7 +79,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-beta-nodeset
     openstackdataplaneservice: download-cache
   name: download-cache-edpm-multinodeset-edpm-compute-beta-nodeset
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -178,7 +175,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-beta-nodeset
     openstackdataplaneservice: bootstrap
   name: bootstrap-edpm-multinodeset-edpm-compute-beta-nodeset
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true

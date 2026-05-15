@@ -52,7 +52,7 @@ kind: TestAssert
 commands:
   - script: |
       template='{{index .metadata.annotations "cert-manager.io/alt-names" }}'
-      names=$(oc get secret cert-generic-service1-default-edpm-compute-0 -n openstack-kuttl-tests -o go-template="$template")
+      names=$(oc get secret cert-generic-service1-default-edpm-compute-0 -n $NAMESPACE -o go-template="$template")
       echo $names > test123.data
       regex="(?=.*(edpm-compute-0\.internalapi\.example\.com))(?=.*(edpm-compute-0\.storage\.example\.com))(?=.*(edpm-compute-0\.tenant\.example\.com))(?=.*(edpm-compute-0\.ctlplane\.example\.com))"
       matches=$(grep -P "$regex" test123.data)
@@ -113,7 +113,6 @@ metadata:
     openstackdataplanenodeset: openstack-edpm-tls
     openstackdataplaneservice: install-certs-ovr
   name: install-certs-ovr-openstack-edpm-tls-openstack-edpm-tls
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -238,7 +237,6 @@ metadata:
     openstackdataplanenodeset: openstack-edpm-tls
     openstackdataplaneservice: generic-service1
   name: generic-service1-openstack-edpm-tls-openstack-edpm-tls
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true

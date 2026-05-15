@@ -15,8 +15,8 @@ commands:
         fi
       }
 
-      if oc get secret combined-ca-bundle -n openstack-kuttl-tests; then  oc delete secret  combined-ca-bundle -n openstack-kuttl-tests; fi
+      if oc get secret combined-ca-bundle -n $NAMESPACE; then  oc delete secret  combined-ca-bundle -n $NAMESPACE; fi
       oc apply -f ./certs.yaml
-      wait_for 100 oc get secret osp-rootca-secret -n openstack-kuttl-tests
-      CA_CRT=$(oc get secret osp-rootca-secret -n openstack-kuttl-tests -o json|jq -r '.data."ca.crt"')
-      oc create secret generic combined-ca-bundle  -n openstack-kuttl-tests --from-literal=tls-ca-bundle.pem=$CA_CRT
+      wait_for 100 oc get secret osp-rootca-secret -n $NAMESPACE
+      CA_CRT=$(oc get secret osp-rootca-secret -n $NAMESPACE -o json|jq -r '.data."ca.crt"')
+      oc create secret generic combined-ca-bundle  -n $NAMESPACE --from-literal=tls-ca-bundle.pem=$CA_CRT
