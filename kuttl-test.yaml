@@ -29,6 +29,14 @@ commands:
       -n openstack-kuttl-tests \
       -o yaml | \
       oc apply -f -
+  - script: |
+      oc create secret generic combined-ca-bundle \
+      --save-config \
+      --dry-run=client \
+      --from-literal=tls-ca-bundle.pem="placeholder" \
+      -n openstack-kuttl-tests \
+      -o yaml | \
+      oc apply -f -
 reportFormat: xml
 reportName: kuttl-report-openstack
 reportGranularity: test

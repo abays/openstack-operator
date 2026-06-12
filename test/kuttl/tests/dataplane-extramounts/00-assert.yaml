@@ -36,7 +36,6 @@ metadata:
     openstackdataplanenodeset: edpm-extramounts
     openstackdataplaneservice: test-service
   name: test-service-edpm-extramounts-edpm-extramounts
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true

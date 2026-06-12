@@ -3,8 +3,8 @@
 apiVersion: kuttl.dev/v1beta1
 kind: TestStep
 commands:
-  - script: oc delete openstackdataplanedeployment edpm-compute-no-nodes-non-existent-service -n openstack-kuttl-tests --ignore-not-found=true
-  - script: oc delete openstackdataplanedeployment edpm-compute-node-selection -n openstack-kuttl-tests --ignore-not-found=true
+  - script: oc delete openstackdataplanedeployment edpm-compute-no-nodes-non-existent-service -n $NAMESPACE --ignore-not-found=true
+  - script: oc delete openstackdataplanedeployment edpm-compute-node-selection -n $NAMESPACE --ignore-not-found=true
 ---
 # Create ConfigMap and Secret for ansibleVarsFrom
 apiVersion: v1

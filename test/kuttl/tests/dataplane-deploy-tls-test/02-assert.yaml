@@ -23,7 +23,6 @@ metadata:
     osdp-service-cert-key: default
     osdpns: openstack-edpm-tls
   name: tls-dnsnames-default-edpm-compute-0
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     kind: OpenStackDataPlaneNodeSet
@@ -46,7 +45,7 @@ kind: TestAssert
 commands:
   - script: |
       template='{{index .spec.dnsNames }}'
-      names=$(oc get certificate tls-dnsnames-default-edpm-compute-0 -n openstack-kuttl-tests -o go-template="$template")
+      names=$(oc get certificate tls-dnsnames-default-edpm-compute-0 -n $NAMESPACE -o go-template="$template")
       echo $names > test123.data
       regex="(?=.*(edpm-compute-0\.internalapi\.example\.com))(?=.*(edpm-compute-0\.storage\.example\.com))(?=.*(edpm-compute-0\.tenant\.example\.com))(?=.*(edpm-compute-0\.ctlplane\.example\.com))"
       matches=$(grep -P "$regex" test123.data)
@@ -59,7 +58,7 @@ commands:
       fi
   - script: |
       template='{{index .spec.usages }}'
-      usages=$(oc get certificate tls-dnsnames-default-edpm-compute-0 -n openstack-kuttl-tests -o go-template="$template")
+      usages=$(oc get certificate tls-dnsnames-default-edpm-compute-0 -n $NAMESPACE -o go-template="$template")
       echo $usages > test123.data
       regex="(?=.*(key encipherment))(?=.*(digital signature))(?=.*(server auth))"
       matches=$(grep -P "$regex" test123.data)
@@ -96,7 +95,6 @@ metadata:
     osdp-service-cert-key: second
     osdpns: openstack-edpm-tls
   name: tls-dnsnames-second-edpm-compute-0
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     kind: OpenStackDataPlaneNodeSet
@@ -142,7 +140,6 @@ metadata:
     openstackdataplanenodeset: openstack-edpm-tls
     openstackdataplaneservice: install-certs-ovrd
   name: install-certs-ovrd-openstack-edpm-tls-openstack-edpm-tls
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -276,7 +273,6 @@ metadata:
     openstackdataplanenodeset: openstack-edpm-tls
     openstackdataplaneservice: tls-dnsnames
   name: tls-dnsnames-openstack-edpm-tls-openstack-edpm-tls
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true

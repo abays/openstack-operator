@@ -1,15 +1,17 @@
 #!/bin/bash
 set -x
 
+NS_SUFFIX="${NAMESPACE:+.${NAMESPACE}}"
+
 # Check if all services from before are present in after and have valid fingerprints
 while IFS= read -r before; do
     eval $(echo "$before" | awk '{print "service_name="$1" fp_before="$2}')
-    fp_after=$(grep -F "$service_name" /tmp/endpoint_fingerprints_after | awk '{ print $2}')
+    fp_after=$(grep -F "$service_name" /tmp/endpoint_fingerprints_after${NS_SUFFIX} | awk '{ print $2}')
 
     echo -n "Endpoint $service_name - "
 
     if [ -z "$fp_after" ]; then
-        echo "not found in endpoint_fingerprints_after"
+        echo "not found in endpoint_fingerprints_after${NS_SUFFIX}"
         exit 1
     fi
 
@@ -19,6 +21,6 @@ while IFS= read -r before; do
     fi
 
     echo "OK cert rotated - before: $fp_before - after: $fp_after"
-done < /tmp/endpoint_fingerprints_before
+done < /tmp/endpoint_fingerprints_before${NS_SUFFIX}
 
 exit 0

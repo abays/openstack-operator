@@ -63,7 +63,6 @@ metadata:
     openstackdataplanenodeset: edpm-no-nodes-custom-svc
     openstackdataplaneservice: custom-img-svc
   name: custom-img-svc-edpm-compute-no-nodes-edpm-no-nodes-custom-svc
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true

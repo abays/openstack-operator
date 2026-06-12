@@ -16,7 +16,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: kuttl-service
   name: kuttl-service-edpm-compute-no-nodes-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true

@@ -3,7 +3,7 @@ kind: TestAssert
 timeout: 600
 collectors:
 - type: command
-  command: oc get OpenStackDataPlaneDeployment -n openstack-kuttl-tests edpm-compute-global -o yaml
+  command: oc get OpenStackDataPlaneDeployment -n $NAMESPACE edpm-compute-global -o yaml
   name: edpm-compute-global-deployment
 - type: command
   command: oc logs -n openstack-operators -l openstack.org/operator-name=openstack
@@ -13,7 +13,6 @@ apiVersion: dataplane.openstack.org/v1beta1
 kind: OpenStackDataPlaneNodeSet
 metadata:
   name: edpm-compute-global
-  namespace: openstack-kuttl-tests
 spec:
   services:
   - download-cache
@@ -80,7 +79,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-global
     openstackdataplaneservice: custom-global-service
   name: custom-global-service-edpm-compute-global
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -188,7 +186,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-global
     openstackdataplaneservice: download-cache
   name: download-cache-edpm-compute-global-edpm-compute-global
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -286,7 +283,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-global
     openstackdataplaneservice: bootstrap
   name: bootstrap-edpm-compute-global-edpm-compute-global
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -390,7 +386,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-global
     openstackdataplaneservice: configure-network
   name: configure-network-edpm-compute-global-edpm-compute-global
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -488,7 +483,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-global
     openstackdataplaneservice: validate-network
   name: validate-network-edpm-compute-global-edpm-compute-global
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -586,7 +580,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-global
     openstackdataplaneservice: configure-os
   name: configure-os-edpm-compute-global-edpm-compute-global
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -684,7 +677,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-global
     openstackdataplaneservice: install-certs
   name: install-certs-edpm-compute-global-edpm-compute-global
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -831,7 +823,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-global
     openstackdataplaneservice: ovn
   name: ovn-edpm-compute-global-edpm-compute-global
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -940,7 +931,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-global
     openstackdataplaneservice: neutron-metadata
   name: neutron-metadata-edpm-compute-global-edpm-compute-global
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -1079,7 +1069,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-global
     openstackdataplaneservice: neutron-ovn
   name: neutron-ovn-edpm-compute-global-edpm-compute-global
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -1218,7 +1207,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-global
     openstackdataplaneservice: neutron-sriov
   name: neutron-sriov-edpm-compute-global-edpm-compute-global
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -1327,7 +1315,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-global
     openstackdataplaneservice: neutron-dhcp
   name: neutron-dhcp-edpm-compute-global-edpm-compute-global
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -1436,7 +1423,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-global
     openstackdataplaneservice: libvirt
   name: libvirt-edpm-compute-global-edpm-compute-global
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true
@@ -1545,7 +1531,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-global
     openstackdataplaneservice: nova
   name: nova-edpm-compute-global-edpm-compute-global
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true

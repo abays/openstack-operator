@@ -12,7 +12,6 @@ apiVersion: dataplane.openstack.org/v1beta1
 kind: OpenStackDataPlaneNodeSet
 metadata:
   name: edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
 status:
   conditions:
   - message: NodeSet Ready
@@ -53,7 +52,6 @@ apiVersion: dataplane.openstack.org/v1beta1
 kind: OpenStackDataPlaneDeployment
 metadata:
   name: edpm-ansiblevars-deploy-update
-  namespace: openstack-kuttl-tests
 status:
   deployed: true
   configMapHashes:

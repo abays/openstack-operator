@@ -39,9 +39,11 @@ echo "Fetching certificates from placement-custom-route secret and creating Conf
 
 # Get the directory where the script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Calculate the path to the kustomize directory
-KUSTOMIZE_DIR="${SCRIPT_DIR}/../../../config/samples/tls/custom_route_cert"
-CONFIGMAP_FILE="${KUSTOMIZE_DIR}/placement-cert-data.yaml"
+# Write to a temp file to avoid parallel workers clobbering a shared repo path.
+# The kustomize overlay at config/samples/tls/custom_route_cert references this
+# file, but since the parallel runner assigns each test directory to a single
+# worker, only one invocation of this test can run at a time.
+CONFIGMAP_FILE="/tmp/placement-cert-data-${NAMESPACE}.yaml"
 
 echo "Creating ConfigMap file at: ${CONFIGMAP_FILE}"
 
@@ -60,8 +62,10 @@ $(oc get secret placement-custom-route -n ${NAMESPACE} -o jsonpath='{.data.tls\.
 $(oc get secret placement-custom-route -n ${NAMESPACE} -o jsonpath='{.data.ca\.crt}' | base64 -d | sed 's/^/    /')
 EOF
 
-# Also apply it to the cluster for verification
+# Copy to the kustomize directory so oc kustomize can find it
+KUSTOMIZE_DIR="${SCRIPT_DIR}/../../../config/samples/tls/custom_route_cert"
+cp "${CONFIGMAP_FILE}" "${KUSTOMIZE_DIR}/placement-cert-data.yaml"
+
 oc apply -f "${CONFIGMAP_FILE}"
 
 echo "ConfigMap placement-cert-data created at ${CONFIGMAP_FILE} and applied to namespace ${NAMESPACE}"
-echo "This file will be used by kustomize as a resource"

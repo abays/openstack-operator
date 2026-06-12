@@ -10,7 +10,6 @@ apiVersion: dataplane.openstack.org/v1beta1
 kind: OpenStackDataPlaneNodeSet
 metadata:
   name: edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
 spec:
   services:
   - download-cache
@@ -75,7 +74,6 @@ metadata:
     openstackdataplanenodeset: edpm-compute-no-nodes
     openstackdataplaneservice: ovn
   name: ovn-edpm-compute-no-nodes-updated-ovn-cm-edpm-compute-no-nodes
-  namespace: openstack-kuttl-tests
   ownerReferences:
   - apiVersion: dataplane.openstack.org/v1beta1
     blockOwnerDeletion: true

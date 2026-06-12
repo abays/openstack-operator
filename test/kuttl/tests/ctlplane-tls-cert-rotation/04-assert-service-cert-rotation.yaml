@@ -9,8 +9,8 @@ commands:
   - script: |
       echo "Checking endpoint cert rotation..."
       for i in $(seq 1 30); do
-        oc exec -i openstackclient -n $NAMESPACE -- bash -s < ../../common/osp_endpoint_fingerprints.sh > /tmp/endpoint_fingerprints_after
-        if bash ../../common/osp_check_fingerprints.sh 2>/dev/null; then
+        oc exec -i openstackclient -n $NAMESPACE -- bash -s < ../../common/osp_endpoint_fingerprints.sh > /tmp/endpoint_fingerprints_after.${NAMESPACE}
+        if NAMESPACE=$NAMESPACE bash ../../common/osp_check_fingerprints.sh 2>/dev/null; then
           echo "All endpoint certs rotated successfully."
           exit 0
         fi
@@ -18,5 +18,5 @@ commands:
         sleep 20
       done
       echo "Collecting final fingerprints for failure diagnostics..."
-      oc exec -i openstackclient -n $NAMESPACE -- bash -s < ../../common/osp_endpoint_fingerprints.sh > /tmp/endpoint_fingerprints_after
-      bash -s < ../../common/osp_check_fingerprints.sh
+      oc exec -i openstackclient -n $NAMESPACE -- bash -s < ../../common/osp_endpoint_fingerprints.sh > /tmp/endpoint_fingerprints_after.${NAMESPACE}
+      NAMESPACE=$NAMESPACE bash ../../common/osp_check_fingerprints.sh
