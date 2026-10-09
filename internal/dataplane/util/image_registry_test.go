@@ -63,7 +63,7 @@ func setupTestHelper(includeOpenShiftCRDs bool, objects ...client.Object) *helpe
 		WithObjects(objects...).
 		Build()
 
-	fakeKubeClient := fake.NewSimpleClientset()
+	fakeKubeClient := fake.NewClientset()
 
 	mockObj := &corev1.OpenStackControlPlane{
 		ObjectMeta: metav1.ObjectMeta{

@@ -111,8 +111,7 @@ var _ = BeforeSuite(func() {
 	})
 	Expect(err).NotTo(HaveOccurred())
 
-	err = ctrl.NewWebhookManagedBy(mgr).
-		For(&OpenStackClient{}).
+	err = ctrl.NewWebhookManagedBy(mgr, &OpenStackClient{}).
 		Complete()
 	Expect(err).NotTo(HaveOccurred())
 

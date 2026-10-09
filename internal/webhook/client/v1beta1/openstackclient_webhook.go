@@ -19,12 +19,9 @@ package v1beta1
 
 import (
 	"context"
-	"fmt"
 
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/webhook"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 
 	clientv1beta1 "github.com/openstack-k8s-operators/openstack-operator/api/client/v1beta1"
@@ -36,7 +33,7 @@ var openstackclientlog = logf.Log.WithName("openstackclient-resource")
 
 // SetupOpenStackClientWebhookWithManager registers the webhook for OpenStackClient in the manager.
 func SetupOpenStackClientWebhookWithManager(mgr ctrl.Manager) error {
-	return ctrl.NewWebhookManagedBy(mgr).For(&clientv1beta1.OpenStackClient{}).
+	return ctrl.NewWebhookManagedBy(mgr, &clientv1beta1.OpenStackClient{}).
 		WithValidator(&OpenStackClientCustomValidator{}).
 		WithDefaulter(&OpenStackClientCustomDefaulter{}).
 		Complete()
@@ -55,15 +52,10 @@ type OpenStackClientCustomDefaulter struct {
 	// TODO(user): Add more fields as needed for defaulting
 }
 
-var _ webhook.CustomDefaulter = &OpenStackClientCustomDefaulter{}
+var _ admission.Defaulter[*clientv1beta1.OpenStackClient] = &OpenStackClientCustomDefaulter{}
 
 // Default implements webhook.CustomDefaulter so a webhook will be registered for the Kind OpenStackClient.
-func (d *OpenStackClientCustomDefaulter) Default(_ context.Context, obj runtime.Object) error {
-	openstackclient, ok := obj.(*clientv1beta1.OpenStackClient)
-
-	if !ok {
-		return fmt.Errorf("expected an OpenStackClient object but got %T", obj)
-	}
+func (d *OpenStackClientCustomDefaulter) Default(_ context.Context, openstackclient *clientv1beta1.OpenStackClient) error {
 	openstackclientlog.Info("Defaulting for OpenStackClient", "name", openstackclient.GetName())
 
 	// Call the Default method on the OpenStackClient type
@@ -86,14 +78,10 @@ type OpenStackClientCustomValidator struct {
 	// TODO(user): Add more fields as needed for validation
 }
 
-var _ webhook.CustomValidator = &OpenStackClientCustomValidator{}
+var _ admission.Validator[*clientv1beta1.OpenStackClient] = &OpenStackClientCustomValidator{}
 
 // ValidateCreate implements webhook.CustomValidator so a webhook will be registered for the type OpenStackClient.
-func (v *OpenStackClientCustomValidator) ValidateCreate(_ context.Context, obj runtime.Object) (admission.Warnings, error) {
-	openstackclient, ok := obj.(*clientv1beta1.OpenStackClient)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackClient object but got %T", obj)
-	}
+func (v *OpenStackClientCustomValidator) ValidateCreate(_ context.Context, openstackclient *clientv1beta1.OpenStackClient) (admission.Warnings, error) {
 	openstackclientlog.Info("Validation for OpenStackClient upon creation", "name", openstackclient.GetName())
 
 	// Call the ValidateCreate method on the OpenStackClient type
@@ -101,11 +89,7 @@ func (v *OpenStackClientCustomValidator) ValidateCreate(_ context.Context, obj r
 }
 
 // ValidateUpdate implements webhook.CustomValidator so a webhook will be registered for the type OpenStackClient.
-func (v *OpenStackClientCustomValidator) ValidateUpdate(_ context.Context, oldObj, newObj runtime.Object) (admission.Warnings, error) {
-	openstackclient, ok := newObj.(*clientv1beta1.OpenStackClient)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackClient object for the newObj but got %T", newObj)
-	}
+func (v *OpenStackClientCustomValidator) ValidateUpdate(_ context.Context, oldObj, openstackclient *clientv1beta1.OpenStackClient) (admission.Warnings, error) {
 	openstackclientlog.Info("Validation for OpenStackClient upon update", "name", openstackclient.GetName())
 
 	// Call the ValidateUpdate method on the OpenStackClient type
@@ -113,11 +97,7 @@ func (v *OpenStackClientCustomValidator) ValidateUpdate(_ context.Context, oldOb
 }
 
 // ValidateDelete implements webhook.CustomValidator so a webhook will be registered for the type OpenStackClient.
-func (v *OpenStackClientCustomValidator) ValidateDelete(_ context.Context, obj runtime.Object) (admission.Warnings, error) {
-	openstackclient, ok := obj.(*clientv1beta1.OpenStackClient)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackClient object but got %T", obj)
-	}
+func (v *OpenStackClientCustomValidator) ValidateDelete(_ context.Context, openstackclient *clientv1beta1.OpenStackClient) (admission.Warnings, error) {
 	openstackclientlog.Info("Validation for OpenStackClient upon deletion", "name", openstackclient.GetName())
 
 	// Call the ValidateDelete method on the OpenStackClient type

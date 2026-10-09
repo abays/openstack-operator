@@ -19,16 +19,13 @@ package v1beta1
 
 import (
 	"context"
-	"fmt"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/webhook"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 
 	backupv1beta1 "github.com/openstack-k8s-operators/openstack-operator/api/backup/v1beta1"
@@ -44,7 +41,7 @@ func SetupOpenStackBackupConfigWebhookWithManager(mgr ctrl.Manager) error {
 		backupConfigWebhookClient = mgr.GetClient()
 	}
 
-	return ctrl.NewWebhookManagedBy(mgr).For(&backupv1beta1.OpenStackBackupConfig{}).
+	return ctrl.NewWebhookManagedBy(mgr, &backupv1beta1.OpenStackBackupConfig{}).
 		WithValidator(&OpenStackBackupConfigCustomValidator{}).
 		Complete()
 }
@@ -58,14 +55,10 @@ func SetupOpenStackBackupConfigWebhookWithManager(mgr ctrl.Manager) error {
 // as this struct is used only for temporary operations and does not need to be deeply copied.
 type OpenStackBackupConfigCustomValidator struct{}
 
-var _ webhook.CustomValidator = &OpenStackBackupConfigCustomValidator{}
+var _ admission.Validator[*backupv1beta1.OpenStackBackupConfig] = &OpenStackBackupConfigCustomValidator{}
 
 // ValidateCreate implements webhook.CustomValidator so a webhook will be registered for the type OpenStackBackupConfig.
-func (v *OpenStackBackupConfigCustomValidator) ValidateCreate(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
-	backupConfig, ok := obj.(*backupv1beta1.OpenStackBackupConfig)
-	if !ok {
-		return nil, fmt.Errorf("expected an OpenStackBackupConfig object but got %T", obj)
-	}
+func (v *OpenStackBackupConfigCustomValidator) ValidateCreate(ctx context.Context, backupConfig *backupv1beta1.OpenStackBackupConfig) (admission.Warnings, error) {
 	openstackbackupconfiglog.Info("Validation for OpenStackBackupConfig upon creation", "name", backupConfig.GetName())
 
 	configList, err := backupv1beta1.GetOpenStackBackupConfigs(ctx, backupConfig.Namespace, backupConfigWebhookClient)
@@ -97,22 +90,14 @@ func (v *OpenStackBackupConfigCustomValidator) ValidateCreate(ctx context.Contex
 }
 
 // ValidateUpdate implements webhook.CustomValidator so a webhook will be registered for the type OpenStackBackupConfig.
-func (v *OpenStackBackupConfigCustomValidator) ValidateUpdate(_ context.Context, _, newObj runtime.Object) (admission.Warnings, error) {
-	backupConfig, ok := newObj.(*backupv1beta1.OpenStackBackupConfig)
-	if !ok {
-		return nil, fmt.Errorf("expected an OpenStackBackupConfig object for the newObj but got %T", newObj)
-	}
+func (v *OpenStackBackupConfigCustomValidator) ValidateUpdate(_ context.Context, _, backupConfig *backupv1beta1.OpenStackBackupConfig) (admission.Warnings, error) {
 	openstackbackupconfiglog.Info("Validation for OpenStackBackupConfig upon update", "name", backupConfig.GetName())
 
 	return nil, nil
 }
 
 // ValidateDelete implements webhook.CustomValidator so a webhook will be registered for the type OpenStackBackupConfig.
-func (v *OpenStackBackupConfigCustomValidator) ValidateDelete(_ context.Context, obj runtime.Object) (admission.Warnings, error) {
-	backupConfig, ok := obj.(*backupv1beta1.OpenStackBackupConfig)
-	if !ok {
-		return nil, fmt.Errorf("expected an OpenStackBackupConfig object but got %T", obj)
-	}
+func (v *OpenStackBackupConfigCustomValidator) ValidateDelete(_ context.Context, backupConfig *backupv1beta1.OpenStackBackupConfig) (admission.Warnings, error) {
 	openstackbackupconfiglog.Info("Validation for OpenStackBackupConfig upon deletion", "name", backupConfig.GetName())
 
 	return nil, nil

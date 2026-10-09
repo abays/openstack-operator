@@ -18,13 +18,9 @@ package v1beta1
 
 import (
 	"context"
-	"fmt"
-
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/webhook"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 
 	corev1beta1 "github.com/openstack-k8s-operators/openstack-operator/api/core/v1beta1"
@@ -42,7 +38,7 @@ func SetupOpenStackVersionWebhookWithManager(mgr ctrl.Manager) error {
 		versionWebhookClient = mgr.GetClient()
 	}
 
-	return ctrl.NewWebhookManagedBy(mgr).For(&corev1beta1.OpenStackVersion{}).
+	return ctrl.NewWebhookManagedBy(mgr, &corev1beta1.OpenStackVersion{}).
 		WithValidator(&OpenStackVersionCustomValidator{}).
 		WithDefaulter(&OpenStackVersionCustomDefaulter{}).
 		Complete()
@@ -60,15 +56,10 @@ func SetupOpenStackVersionWebhookWithManager(mgr ctrl.Manager) error {
 type OpenStackVersionCustomDefaulter struct {
 }
 
-var _ webhook.CustomDefaulter = &OpenStackVersionCustomDefaulter{}
+var _ admission.Defaulter[*corev1beta1.OpenStackVersion] = &OpenStackVersionCustomDefaulter{}
 
 // Default implements webhook.CustomDefaulter so a webhook will be registered for the Kind OpenStackVersion.
-func (d *OpenStackVersionCustomDefaulter) Default(_ context.Context, obj runtime.Object) error {
-	openstackversion, ok := obj.(*corev1beta1.OpenStackVersion)
-
-	if !ok {
-		return fmt.Errorf("expected an OpenStackVersion object but got %T", obj)
-	}
+func (d *OpenStackVersionCustomDefaulter) Default(_ context.Context, openstackversion *corev1beta1.OpenStackVersion) error {
 	openstackversionlog.Info("Defaulting for OpenStackVersion", "name", openstackversion.GetName())
 
 	// Call the Default method on the OpenStackVersion type
@@ -90,14 +81,10 @@ func (d *OpenStackVersionCustomDefaulter) Default(_ context.Context, obj runtime
 type OpenStackVersionCustomValidator struct {
 }
 
-var _ webhook.CustomValidator = &OpenStackVersionCustomValidator{}
+var _ admission.Validator[*corev1beta1.OpenStackVersion] = &OpenStackVersionCustomValidator{}
 
 // ValidateCreate implements webhook.CustomValidator so a webhook will be registered for the type OpenStackVersion.
-func (v *OpenStackVersionCustomValidator) ValidateCreate(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
-	openstackversion, ok := obj.(*corev1beta1.OpenStackVersion)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackVersion object but got %T", obj)
-	}
+func (v *OpenStackVersionCustomValidator) ValidateCreate(ctx context.Context, openstackversion *corev1beta1.OpenStackVersion) (admission.Warnings, error) {
 	openstackversionlog.Info("Validation for OpenStackVersion upon creation", "name", openstackversion.GetName())
 
 	// Call the ValidateCreate method on the OpenStackVersion type
@@ -105,11 +92,7 @@ func (v *OpenStackVersionCustomValidator) ValidateCreate(ctx context.Context, ob
 }
 
 // ValidateUpdate implements webhook.CustomValidator so a webhook will be registered for the type OpenStackVersion.
-func (v *OpenStackVersionCustomValidator) ValidateUpdate(ctx context.Context, oldObj, newObj runtime.Object) (admission.Warnings, error) {
-	openstackversion, ok := newObj.(*corev1beta1.OpenStackVersion)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackVersion object for the newObj but got %T", newObj)
-	}
+func (v *OpenStackVersionCustomValidator) ValidateUpdate(ctx context.Context, oldObj, openstackversion *corev1beta1.OpenStackVersion) (admission.Warnings, error) {
 	openstackversionlog.Info("Validation for OpenStackVersion upon update", "name", openstackversion.GetName())
 
 	// Call the ValidateUpdate method on the OpenStackVersion type
@@ -117,11 +100,7 @@ func (v *OpenStackVersionCustomValidator) ValidateUpdate(ctx context.Context, ol
 }
 
 // ValidateDelete implements webhook.CustomValidator so a webhook will be registered for the type OpenStackVersion.
-func (v *OpenStackVersionCustomValidator) ValidateDelete(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
-	openstackversion, ok := obj.(*corev1beta1.OpenStackVersion)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackVersion object but got %T", obj)
-	}
+func (v *OpenStackVersionCustomValidator) ValidateDelete(ctx context.Context, openstackversion *corev1beta1.OpenStackVersion) (admission.Warnings, error) {
 	openstackversionlog.Info("Validation for OpenStackVersion upon deletion", "name", openstackversion.GetName())
 
 	// Call the ValidateDelete method on the OpenStackVersion type

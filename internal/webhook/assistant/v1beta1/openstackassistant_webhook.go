@@ -19,12 +19,9 @@ package v1beta1
 
 import (
 	"context"
-	"fmt"
 
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/webhook"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 
 	assistantv1beta1 "github.com/openstack-k8s-operators/openstack-operator/api/assistant/v1beta1"
@@ -34,7 +31,7 @@ var openstackassistantlog = logf.Log.WithName("openstackassistant-resource")
 
 // SetupOpenStackAssistantWebhookWithManager registers the webhook for OpenStackAssistant in the manager.
 func SetupOpenStackAssistantWebhookWithManager(mgr ctrl.Manager) error {
-	return ctrl.NewWebhookManagedBy(mgr).For(&assistantv1beta1.OpenStackAssistant{}).
+	return ctrl.NewWebhookManagedBy(mgr, &assistantv1beta1.OpenStackAssistant{}).
 		WithValidator(&OpenStackAssistantCustomValidator{}).
 		WithDefaulter(&OpenStackAssistantCustomDefaulter{}).
 		Complete()
@@ -45,14 +42,10 @@ func SetupOpenStackAssistantWebhookWithManager(mgr ctrl.Manager) error {
 // OpenStackAssistantCustomDefaulter struct is responsible for setting default values on the custom resource.
 type OpenStackAssistantCustomDefaulter struct{}
 
-var _ webhook.CustomDefaulter = &OpenStackAssistantCustomDefaulter{}
+var _ admission.Defaulter[*assistantv1beta1.OpenStackAssistant] = &OpenStackAssistantCustomDefaulter{}
 
 // Default implements webhook.CustomDefaulter
-func (d *OpenStackAssistantCustomDefaulter) Default(_ context.Context, obj runtime.Object) error {
-	openstackassistant, ok := obj.(*assistantv1beta1.OpenStackAssistant)
-	if !ok {
-		return fmt.Errorf("expected an OpenStackAssistant object but got %T", obj)
-	}
+func (d *OpenStackAssistantCustomDefaulter) Default(_ context.Context, openstackassistant *assistantv1beta1.OpenStackAssistant) error {
 	openstackassistantlog.Info("Defaulting for OpenStackAssistant", "name", openstackassistant.GetName())
 
 	openstackassistant.Default()
@@ -65,36 +58,24 @@ func (d *OpenStackAssistantCustomDefaulter) Default(_ context.Context, obj runti
 // OpenStackAssistantCustomValidator struct is responsible for validating the OpenStackAssistant resource.
 type OpenStackAssistantCustomValidator struct{}
 
-var _ webhook.CustomValidator = &OpenStackAssistantCustomValidator{}
+var _ admission.Validator[*assistantv1beta1.OpenStackAssistant] = &OpenStackAssistantCustomValidator{}
 
 // ValidateCreate implements webhook.CustomValidator
-func (v *OpenStackAssistantCustomValidator) ValidateCreate(_ context.Context, obj runtime.Object) (admission.Warnings, error) {
-	openstackassistant, ok := obj.(*assistantv1beta1.OpenStackAssistant)
-	if !ok {
-		return nil, fmt.Errorf("expected an OpenStackAssistant object but got %T", obj)
-	}
+func (v *OpenStackAssistantCustomValidator) ValidateCreate(_ context.Context, openstackassistant *assistantv1beta1.OpenStackAssistant) (admission.Warnings, error) {
 	openstackassistantlog.Info("Validation for OpenStackAssistant upon creation", "name", openstackassistant.GetName())
 
 	return openstackassistant.ValidateCreate()
 }
 
 // ValidateUpdate implements webhook.CustomValidator
-func (v *OpenStackAssistantCustomValidator) ValidateUpdate(_ context.Context, oldObj, newObj runtime.Object) (admission.Warnings, error) {
-	openstackassistant, ok := newObj.(*assistantv1beta1.OpenStackAssistant)
-	if !ok {
-		return nil, fmt.Errorf("expected an OpenStackAssistant object for the newObj but got %T", newObj)
-	}
+func (v *OpenStackAssistantCustomValidator) ValidateUpdate(_ context.Context, oldObj, openstackassistant *assistantv1beta1.OpenStackAssistant) (admission.Warnings, error) {
 	openstackassistantlog.Info("Validation for OpenStackAssistant upon update", "name", openstackassistant.GetName())
 
 	return openstackassistant.ValidateUpdate(oldObj)
 }
 
 // ValidateDelete implements webhook.CustomValidator
-func (v *OpenStackAssistantCustomValidator) ValidateDelete(_ context.Context, obj runtime.Object) (admission.Warnings, error) {
-	openstackassistant, ok := obj.(*assistantv1beta1.OpenStackAssistant)
-	if !ok {
-		return nil, fmt.Errorf("expected an OpenStackAssistant object but got %T", obj)
-	}
+func (v *OpenStackAssistantCustomValidator) ValidateDelete(_ context.Context, openstackassistant *assistantv1beta1.OpenStackAssistant) (admission.Warnings, error) {
 	openstackassistantlog.Info("Validation for OpenStackAssistant upon deletion", "name", openstackassistant.GetName())
 
 	return openstackassistant.ValidateDelete()

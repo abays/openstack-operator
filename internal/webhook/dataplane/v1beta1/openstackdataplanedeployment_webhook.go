@@ -19,12 +19,8 @@ package v1beta1
 
 import (
 	"context"
-	"fmt"
-
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/webhook"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 
 	dataplanev1beta1 "github.com/openstack-k8s-operators/openstack-operator/api/dataplane/v1beta1"
@@ -36,7 +32,7 @@ var openstackdataplanedeploymentlog = logf.Log.WithName("openstackdataplanedeplo
 
 // SetupOpenStackDataPlaneDeploymentWebhookWithManager registers the webhook for OpenStackDataPlaneDeployment in the manager.
 func SetupOpenStackDataPlaneDeploymentWebhookWithManager(mgr ctrl.Manager) error {
-	return ctrl.NewWebhookManagedBy(mgr).For(&dataplanev1beta1.OpenStackDataPlaneDeployment{}).
+	return ctrl.NewWebhookManagedBy(mgr, &dataplanev1beta1.OpenStackDataPlaneDeployment{}).
 		WithValidator(&OpenStackDataPlaneDeploymentCustomValidator{}).
 		WithDefaulter(&OpenStackDataPlaneDeploymentCustomDefaulter{}).
 		Complete()
@@ -55,15 +51,10 @@ type OpenStackDataPlaneDeploymentCustomDefaulter struct {
 	// TODO(user): Add more fields as needed for defaulting
 }
 
-var _ webhook.CustomDefaulter = &OpenStackDataPlaneDeploymentCustomDefaulter{}
+var _ admission.Defaulter[*dataplanev1beta1.OpenStackDataPlaneDeployment] = &OpenStackDataPlaneDeploymentCustomDefaulter{}
 
 // Default implements webhook.CustomDefaulter so a webhook will be registered for the Kind OpenStackDataPlaneDeployment.
-func (d *OpenStackDataPlaneDeploymentCustomDefaulter) Default(_ context.Context, obj runtime.Object) error {
-	openstackdataplanedeployment, ok := obj.(*dataplanev1beta1.OpenStackDataPlaneDeployment)
-
-	if !ok {
-		return fmt.Errorf("expected an OpenStackDataPlaneDeployment object but got %T", obj)
-	}
+func (d *OpenStackDataPlaneDeploymentCustomDefaulter) Default(_ context.Context, openstackdataplanedeployment *dataplanev1beta1.OpenStackDataPlaneDeployment) error {
 	openstackdataplanedeploymentlog.Info("Defaulting for OpenStackDataPlaneDeployment", "name", openstackdataplanedeployment.GetName())
 
 	// Call the Default method on the OpenStackDataPlaneDeployment type
@@ -83,14 +74,10 @@ type OpenStackDataPlaneDeploymentCustomValidator struct {
 	// TODO(user): Add more fields as needed for validation
 }
 
-var _ webhook.CustomValidator = &OpenStackDataPlaneDeploymentCustomValidator{}
+var _ admission.Validator[*dataplanev1beta1.OpenStackDataPlaneDeployment] = &OpenStackDataPlaneDeploymentCustomValidator{}
 
 // ValidateCreate implements webhook.CustomValidator so a webhook will be registered for the type OpenStackDataPlaneDeployment.
-func (v *OpenStackDataPlaneDeploymentCustomValidator) ValidateCreate(_ context.Context, obj runtime.Object) (admission.Warnings, error) {
-	openstackdataplanedeployment, ok := obj.(*dataplanev1beta1.OpenStackDataPlaneDeployment)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackDataPlaneDeployment object but got %T", obj)
-	}
+func (v *OpenStackDataPlaneDeploymentCustomValidator) ValidateCreate(_ context.Context, openstackdataplanedeployment *dataplanev1beta1.OpenStackDataPlaneDeployment) (admission.Warnings, error) {
 	openstackdataplanedeploymentlog.Info("Validation for OpenStackDataPlaneDeployment upon creation", "name",
 		openstackdataplanedeployment.GetName())
 
@@ -99,11 +86,7 @@ func (v *OpenStackDataPlaneDeploymentCustomValidator) ValidateCreate(_ context.C
 }
 
 // ValidateUpdate implements webhook.CustomValidator so a webhook will be registered for the type OpenStackDataPlaneDeployment.
-func (v *OpenStackDataPlaneDeploymentCustomValidator) ValidateUpdate(_ context.Context, oldObj, newObj runtime.Object) (admission.Warnings, error) {
-	openstackdataplanedeployment, ok := newObj.(*dataplanev1beta1.OpenStackDataPlaneDeployment)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackDataPlaneDeployment object for the newObj but got %T", newObj)
-	}
+func (v *OpenStackDataPlaneDeploymentCustomValidator) ValidateUpdate(_ context.Context, oldObj, openstackdataplanedeployment *dataplanev1beta1.OpenStackDataPlaneDeployment) (admission.Warnings, error) {
 	openstackdataplanedeploymentlog.Info("Validation for OpenStackDataPlaneDeployment upon update", "name", openstackdataplanedeployment.GetName())
 
 	// Call the ValidateUpdate method on the OpenStackDataPlaneDeployment type
@@ -111,11 +94,7 @@ func (v *OpenStackDataPlaneDeploymentCustomValidator) ValidateUpdate(_ context.C
 }
 
 // ValidateDelete implements webhook.CustomValidator so a webhook will be registered for the type OpenStackDataPlaneDeployment.
-func (v *OpenStackDataPlaneDeploymentCustomValidator) ValidateDelete(_ context.Context, obj runtime.Object) (admission.Warnings, error) {
-	openstackdataplanedeployment, ok := obj.(*dataplanev1beta1.OpenStackDataPlaneDeployment)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackDataPlaneDeployment object but got %T", obj)
-	}
+func (v *OpenStackDataPlaneDeploymentCustomValidator) ValidateDelete(_ context.Context, openstackdataplanedeployment *dataplanev1beta1.OpenStackDataPlaneDeployment) (admission.Warnings, error) {
 	openstackdataplanedeploymentlog.Info("Validation for OpenStackDataPlaneDeployment upon deletion", "name", openstackdataplanedeployment.GetName())
 
 	// Call the ValidateDelete method on the OpenStackDataPlaneDeployment type

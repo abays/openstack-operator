@@ -18,13 +18,9 @@ package v1beta1
 
 import (
 	"context"
-	"fmt"
-
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/webhook"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 
 	dataplanev1beta1 "github.com/openstack-k8s-operators/openstack-operator/api/dataplane/v1beta1"
@@ -43,7 +39,7 @@ func SetupOpenStackDataPlaneNodeSetWebhookWithManager(mgr ctrl.Manager) error {
 		webhookReader = mgr.GetAPIReader()
 	}
 
-	return ctrl.NewWebhookManagedBy(mgr).For(&dataplanev1beta1.OpenStackDataPlaneNodeSet{}).
+	return ctrl.NewWebhookManagedBy(mgr, &dataplanev1beta1.OpenStackDataPlaneNodeSet{}).
 		WithValidator(&OpenStackDataPlaneNodeSetCustomValidator{}).
 		WithDefaulter(&OpenStackDataPlaneNodeSetCustomDefaulter{}).
 		Complete()
@@ -61,15 +57,10 @@ func SetupOpenStackDataPlaneNodeSetWebhookWithManager(mgr ctrl.Manager) error {
 type OpenStackDataPlaneNodeSetCustomDefaulter struct {
 }
 
-var _ webhook.CustomDefaulter = &OpenStackDataPlaneNodeSetCustomDefaulter{}
+var _ admission.Defaulter[*dataplanev1beta1.OpenStackDataPlaneNodeSet] = &OpenStackDataPlaneNodeSetCustomDefaulter{}
 
 // Default implements webhook.CustomDefaulter so a webhook will be registered for the Kind OpenStackDataPlaneNodeSet.
-func (d *OpenStackDataPlaneNodeSetCustomDefaulter) Default(_ context.Context, obj runtime.Object) error {
-	openstackdataplanenodeset, ok := obj.(*dataplanev1beta1.OpenStackDataPlaneNodeSet)
-
-	if !ok {
-		return fmt.Errorf("expected an OpenStackDataPlaneNodeSet object but got %T", obj)
-	}
+func (d *OpenStackDataPlaneNodeSetCustomDefaulter) Default(_ context.Context, openstackdataplanenodeset *dataplanev1beta1.OpenStackDataPlaneNodeSet) error {
 	openstackdataplanenodesetlog.Info("Defaulting for OpenStackDataPlaneNodeSet", "name", openstackdataplanenodeset.GetName())
 
 	// Call the Default method on the OpenStackDataPlaneNodeSet type
@@ -91,14 +82,10 @@ func (d *OpenStackDataPlaneNodeSetCustomDefaulter) Default(_ context.Context, ob
 type OpenStackDataPlaneNodeSetCustomValidator struct {
 }
 
-var _ webhook.CustomValidator = &OpenStackDataPlaneNodeSetCustomValidator{}
+var _ admission.Validator[*dataplanev1beta1.OpenStackDataPlaneNodeSet] = &OpenStackDataPlaneNodeSetCustomValidator{}
 
 // ValidateCreate implements webhook.CustomValidator so a webhook will be registered for the type OpenStackDataPlaneNodeSet.
-func (v *OpenStackDataPlaneNodeSetCustomValidator) ValidateCreate(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
-	openstackdataplanenodeset, ok := obj.(*dataplanev1beta1.OpenStackDataPlaneNodeSet)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackDataPlaneNodeSet object but got %T", obj)
-	}
+func (v *OpenStackDataPlaneNodeSetCustomValidator) ValidateCreate(ctx context.Context, openstackdataplanenodeset *dataplanev1beta1.OpenStackDataPlaneNodeSet) (admission.Warnings, error) {
 	openstackdataplanenodesetlog.Info("Validation for OpenStackDataPlaneNodeSet upon creation", "name", openstackdataplanenodeset.GetName())
 
 	// Call the ValidateCreate method on the OpenStackDataPlaneNodeSet type
@@ -106,11 +93,7 @@ func (v *OpenStackDataPlaneNodeSetCustomValidator) ValidateCreate(ctx context.Co
 }
 
 // ValidateUpdate implements webhook.CustomValidator so a webhook will be registered for the type OpenStackDataPlaneNodeSet.
-func (v *OpenStackDataPlaneNodeSetCustomValidator) ValidateUpdate(ctx context.Context, oldObj, newObj runtime.Object) (admission.Warnings, error) {
-	openstackdataplanenodeset, ok := newObj.(*dataplanev1beta1.OpenStackDataPlaneNodeSet)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackDataPlaneNodeSet object for the newObj but got %T", newObj)
-	}
+func (v *OpenStackDataPlaneNodeSetCustomValidator) ValidateUpdate(ctx context.Context, oldObj, openstackdataplanenodeset *dataplanev1beta1.OpenStackDataPlaneNodeSet) (admission.Warnings, error) {
 	openstackdataplanenodesetlog.Info("Validation for OpenStackDataPlaneNodeSet upon update", "name", openstackdataplanenodeset.GetName())
 
 	// Call the ValidateUpdate method on the OpenStackDataPlaneNodeSet type
@@ -118,11 +101,7 @@ func (v *OpenStackDataPlaneNodeSetCustomValidator) ValidateUpdate(ctx context.Co
 }
 
 // ValidateDelete implements webhook.CustomValidator so a webhook will be registered for the type OpenStackDataPlaneNodeSet.
-func (v *OpenStackDataPlaneNodeSetCustomValidator) ValidateDelete(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
-	openstackdataplanenodeset, ok := obj.(*dataplanev1beta1.OpenStackDataPlaneNodeSet)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackDataPlaneNodeSet object but got %T", obj)
-	}
+func (v *OpenStackDataPlaneNodeSetCustomValidator) ValidateDelete(ctx context.Context, openstackdataplanenodeset *dataplanev1beta1.OpenStackDataPlaneNodeSet) (admission.Warnings, error) {
 	openstackdataplanenodesetlog.Info("Validation for OpenStackDataPlaneNodeSet upon deletion", "name", openstackdataplanenodeset.GetName())
 
 	// Call the ValidateDelete method on the OpenStackDataPlaneNodeSet type

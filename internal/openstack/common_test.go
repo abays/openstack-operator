@@ -54,7 +54,7 @@ func setupTestHelper(objects ...client.Object) *helper.Helper {
 		Build()
 
 	// Create a fake kubernetes clientset
-	fakeKubeClient := fake.NewSimpleClientset()
+	fakeKubeClient := fake.NewClientset()
 
 	// Create a mock OpenStackControlPlane object for the helper
 	mockObj := &corev1.OpenStackControlPlane{

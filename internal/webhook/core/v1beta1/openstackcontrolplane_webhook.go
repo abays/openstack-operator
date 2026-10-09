@@ -21,11 +21,9 @@ import (
 	"context"
 	"fmt"
 
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/webhook"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 
 	common_annotations "github.com/openstack-k8s-operators/lib-common/modules/common/annotations"
@@ -44,7 +42,7 @@ func SetupOpenStackControlPlaneWebhookWithManager(mgr ctrl.Manager) error {
 		ctlplaneWebhookClient = mgr.GetClient()
 	}
 
-	return ctrl.NewWebhookManagedBy(mgr).For(&corev1beta1.OpenStackControlPlane{}).
+	return ctrl.NewWebhookManagedBy(mgr, &corev1beta1.OpenStackControlPlane{}).
 		WithValidator(&OpenStackControlPlaneCustomValidator{}).
 		WithDefaulter(&OpenStackControlPlaneCustomDefaulter{}).
 		Complete()
@@ -62,15 +60,10 @@ func SetupOpenStackControlPlaneWebhookWithManager(mgr ctrl.Manager) error {
 type OpenStackControlPlaneCustomDefaulter struct {
 }
 
-var _ webhook.CustomDefaulter = &OpenStackControlPlaneCustomDefaulter{}
+var _ admission.Defaulter[*corev1beta1.OpenStackControlPlane] = &OpenStackControlPlaneCustomDefaulter{}
 
 // Default implements webhook.CustomDefaulter so a webhook will be registered for the Kind OpenStackControlPlane.
-func (d *OpenStackControlPlaneCustomDefaulter) Default(ctx context.Context, obj runtime.Object) error {
-	openstackcontrolplane, ok := obj.(*corev1beta1.OpenStackControlPlane)
-
-	if !ok {
-		return fmt.Errorf("expected an OpenStackControlPlane object but got %T", obj)
-	}
+func (d *OpenStackControlPlaneCustomDefaulter) Default(ctx context.Context, openstackcontrolplane *corev1beta1.OpenStackControlPlane) error {
 	openstackcontrolplanelog.Info("Defaulting for OpenStackControlPlane", "name", openstackcontrolplane.GetName())
 
 	// Call the Default method on the OpenStackControlPlane type for existing defaulting logic
@@ -153,14 +146,10 @@ func (d *OpenStackControlPlaneCustomDefaulter) cacheServiceNames(ctx context.Con
 type OpenStackControlPlaneCustomValidator struct {
 }
 
-var _ webhook.CustomValidator = &OpenStackControlPlaneCustomValidator{}
+var _ admission.Validator[*corev1beta1.OpenStackControlPlane] = &OpenStackControlPlaneCustomValidator{}
 
 // ValidateCreate implements webhook.CustomValidator so a webhook will be registered for the type OpenStackControlPlane.
-func (v *OpenStackControlPlaneCustomValidator) ValidateCreate(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
-	openstackcontrolplane, ok := obj.(*corev1beta1.OpenStackControlPlane)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackControlPlane object but got %T", obj)
-	}
+func (v *OpenStackControlPlaneCustomValidator) ValidateCreate(ctx context.Context, openstackcontrolplane *corev1beta1.OpenStackControlPlane) (admission.Warnings, error) {
 	openstackcontrolplanelog.Info("Validation for OpenStackControlPlane upon creation", "name", openstackcontrolplane.GetName())
 
 	// Call the ValidateCreate method on the OpenStackControlPlane type
@@ -168,11 +157,7 @@ func (v *OpenStackControlPlaneCustomValidator) ValidateCreate(ctx context.Contex
 }
 
 // ValidateUpdate implements webhook.CustomValidator so a webhook will be registered for the type OpenStackControlPlane.
-func (v *OpenStackControlPlaneCustomValidator) ValidateUpdate(ctx context.Context, oldObj, newObj runtime.Object) (admission.Warnings, error) {
-	openstackcontrolplane, ok := newObj.(*corev1beta1.OpenStackControlPlane)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackControlPlane object for the newObj but got %T", newObj)
-	}
+func (v *OpenStackControlPlaneCustomValidator) ValidateUpdate(ctx context.Context, oldObj, openstackcontrolplane *corev1beta1.OpenStackControlPlane) (admission.Warnings, error) {
 	openstackcontrolplanelog.Info("Validation for OpenStackControlPlane upon update", "name", openstackcontrolplane.GetName())
 
 	// Call the ValidateUpdate method on the OpenStackControlPlane type
@@ -180,11 +165,7 @@ func (v *OpenStackControlPlaneCustomValidator) ValidateUpdate(ctx context.Contex
 }
 
 // ValidateDelete implements webhook.CustomValidator so a webhook will be registered for the type OpenStackControlPlane.
-func (v *OpenStackControlPlaneCustomValidator) ValidateDelete(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
-	openstackcontrolplane, ok := obj.(*corev1beta1.OpenStackControlPlane)
-	if !ok {
-		return nil, fmt.Errorf("expected a OpenStackControlPlane object but got %T", obj)
-	}
+func (v *OpenStackControlPlaneCustomValidator) ValidateDelete(ctx context.Context, openstackcontrolplane *corev1beta1.OpenStackControlPlane) (admission.Warnings, error) {
 	openstackcontrolplanelog.Info("Validation for OpenStackControlPlane upon deletion", "name", openstackcontrolplane.GetName())
 
 	// Call the ValidateDelete method on the OpenStackControlPlane type

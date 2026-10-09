@@ -682,7 +682,7 @@ func createRootCACertAndIssuer(
 				Algorithm: "RSA",
 				Size:      3072,
 			},
-			IssuerRef: certmgrmetav1.ObjectReference{
+			IssuerRef: certmgrmetav1.IssuerReference{
 				Name:  selfsignedIssuerReq.Name,
 				Kind:  selfsignedIssuerReq.Kind,
 				Group: selfsignedIssuerReq.GroupVersionKind().Group,
